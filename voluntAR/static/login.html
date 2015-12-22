@@ -1,0 +1,21 @@
+<section class="container">
+	<toaster-container></toaster-container>
+  <div class="login">
+    <h1>Login</h1>
+    <form method="post" ng-submit="submit()">
+      <p>
+      	<input ng-model="usr.username" type="text" value="" placeholder="Username or Email">
+      </p>
+      <p>
+      	<input ng-model="usr.password" type="password" value="" placeholder="Password">
+      </p>
+      <p class="submit">
+      	<input type="submit" name="commit" value="Login">
+      </p>
+    </form>
+  </div>
+
+  <div class="login-help">
+    <p>Forgot your password? <a href="index.html">Click here to reset it</a>.</p>
+  </div>
+</section>
