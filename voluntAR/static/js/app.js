@@ -19,6 +19,14 @@ app.run( function($rootScope, $location) {
     });
  })
 
+var onlyLoggedIn = function ($rootScope, $location) {
+    if ($rootScope.loggedUser) {
+      return true;
+    } else {
+      $location.url('/login');
+    }
+};
+
 
 // rutas
 app.config(function($routeProvider) {
@@ -30,7 +38,8 @@ app.config(function($routeProvider) {
 
     .when('/home', {
       templateUrl : 'home.html',
-      controller  : 'HomeController'
+      controller  : 'HomeController',
+      resolve: { loggedIn: onlyLoggedIn }
     })
 
     .otherwise({
@@ -84,8 +93,7 @@ app.controller('loginController', function ($scope, $http, $rootScope, $location
       toaster.pop({
         type: 'error',
         title: 'Error',
-        body: 'Los datos ingresados son incorrectos',
-        showCloseButton: true,
+        body: 'Los datos ingresados son incorrectos.',
         showMethod: 'fadeIn',
         hideMethod: 'fadeOut',
         positionClass: 'toast-top-full-width'
