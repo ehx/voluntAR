@@ -1,95 +1,116 @@
-var app = angular.module('app', ['ngResource', 'ngRoute', 'ngCookies', 'toaster', 'ngAnimate']);
+'use strict';
 
-app.config(function ($httpProvider, $resourceProvider) {
+var app = angular.module('app', [
+  'ngResource', 
+  'ngRoute', 
+  'ngCookies', 
+  'ngAnimate',
+  'LocalStorageModule',
+  'toaster'
+]);
+
+app.config(config);
+
+function config($httpProvider, $resourceProvider) {
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $resourceProvider.defaults.stripTrailingSlashes = false;
-});
+
+};
+
+app.config(['localStorageServiceProvider', function(localStorageServiceProvider){
+  localStorageServiceProvider.setPrefix('ls');
+}])
 
 app.run(['$http', '$cookies', function($http, $cookies) {
   $http.defaults.headers.common['X-CSRFToken'] = $cookies['csrftoken'];
 }]);
 
-app.run( function($rootScope, $location) {
-    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-      if ( $rootScope.loggedUser === null ) {
-          $location.path( "/login/" );
-      }         
-    });
- })
-
-var onlyLoggedIn = function ($rootScope, $location) {
-    if ($rootScope.loggedUser) {
+var onlyLoggedIn = function ($location, localStorageService) {
+    var user = localStorageService.get('user');
+    if (user) {
       return true;
     } else {
       $location.url('/login');
     }
 };
 
-
 // rutas
-app.config(function($routeProvider) {
+app.config(config)
+
+function config($routeProvider) {
   $routeProvider
     .when('/', {
       templateUrl : 'login.html',
       controller  : 'loginController'
     })
 
-    .when('/home', {
-      templateUrl : 'home.html',
-      controller  : 'HomeController',
+    .when('/projects', {
+      templateUrl : 'projects.html',
+      controller  : 'projectsController',
       resolve: { loggedIn: onlyLoggedIn }
+    })
+
+    .when('/plain', {
+      templateUrl : 'plain.html',
     })
 
     .otherwise({
       redirectTo: '/'
     });
-});
+};
+
 
 // Factoriza los resource para obtener datos de la api de django
-app.factory('moduleResource', function ($resource) {
-  return $resource('/module/:id', {id:'@id'},
-    {
-      'query':  {method:'GET', isArray:true},
-    });
-});
+app.factory('moduleResource', moduleResource);
+
+function moduleResource($resource) {
+  return $resource('/module/:id', {id:'@id'}, {
+    'query' : {method:'GET', isArray:true},
+  });
+};
 
 
-app.controller('HomeController', function ($scope, $http) {
+app.controller('projectsController', homeController)
 
-  // obtiene las tareas
-  function getTasks() {
-    //$scope.tasks = taskResource.query({ done: 'False'});
-  }
-  getTasks();
+function homeController($scope, $http, $rootScope, localStorageService) {
+  var user = localStorageService.get('user');
+  $scope.user = user.data.username;
+};
 
-  $scope.token = $http.defaults.headers.common.Authorization
 
-})
+app.controller('loginController', loginController)
 
-app.controller('loginController', function ($scope, $http, $rootScope, $location, toaster) {
+function loginController($scope, $http, $rootScope, $location, toaster, localStorageService) {
+
   $scope.usr = {};
-  $scope.submit = function() 
+  $scope.login = function() 
   {
     var data = {
-            username : $scope.usr.username,
-            password : $scope.usr.password
-          };
+      username : $scope.usr.username,
+      password : $scope.usr.password
+    };
     $http.post('http://localhost:8000/auth/login/', data).then(function(result){
+      // obtengo token de auth
       $http.defaults.headers.common.Authorization = 'Token ' + result.data.auth_token;
-      $http.get('http://localhost:8000/auth/me/')
-      .then(function(user){
-        $rootScope.loggedUser = true;
-        $rootScope.username = user.data.username;
-        $rootScope.idUser = user.data.id;
-      })
-      $location.path( "/home" );
+
+      // obtengo datos del usuario y levanto bandera de login.
+      $http.get('http://localhost:8000/auth/me/').then(function(user){
+        localStorageService.set('user', user);
+        //$rootScope.loggedUser = true;
+        //$rootScope.username = user.data.username;
+        //$rootScope.idUser = user.data.id;
+
+        // redirigo la ruta
+        $location.path( "/projects" );
+      });
     },function() {
       $rootScope.loggedUser = null;
       $rootScope.username = '';
       $rootScope.idUser = 0;
 
+      // muestro error por login incorrecto
       toaster.pop({
         type: 'error',
         title: 'Error',
@@ -100,10 +121,39 @@ app.controller('loginController', function ($scope, $http, $rootScope, $location
       });
     });
   };
-});
+
+  $scope.register = function() {
+    var data_register = {
+      username : $scope.usr.new_username,
+      password : $scope.usr.new_password,
+    };
+
+    // Registro usuario
+    $http.post('http://localhost:8000/auth/register/', data_register).then(function(result){
+        // Una vez registrado , logueo usuario
+        $http.post('http://localhost:8000/auth/login/', data_register).then(function(result){
+
+        // obtengo token de auth
+        $http.defaults.headers.common.Authorization = 'Token ' + result.data.auth_token;
+
+        // obtengo datos del usuario y levanto bandera de login.
+        $http.get('http://localhost:8000/auth/me/').then(function(user){
+          $rootScope.loggedUser = true;
+          $rootScope.username = user.data.username;
+          $rootScope.idUser = user.data.id;
+        });
+
+        // redirigo la ruta
+        $location.path( "/home" );
+      });
+    });
+  };
+};
 
 
-app.provider('taskProvider', function UnicornLauncherProvider() {
+app.provider('taskProvider', UnicornLauncherProvider)
+
+function UnicornLauncherProvider() {
   var useTinfoilShielding = false;
 
   this.useTinfoilShielding = function(value) {
@@ -111,9 +161,6 @@ app.provider('taskProvider', function UnicornLauncherProvider() {
   };
 
   this.$get = ["apiToken", function unicornLauncherFactory(apiToken) {
-
-    // let's assume that the UnicornLauncher constructor was also changed to
-    // accept and use the useTinfoilShielding argument
     return new UnicornLauncher(apiToken, useTinfoilShielding);
   }];
-});
+};
