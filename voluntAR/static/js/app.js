@@ -11,35 +11,14 @@ var app = angular.module('app', [
 
 app.config(config);
 
-function config($httpProvider, $resourceProvider) {
+function config($httpProvider, $resourceProvider, localStorageServiceProvider, $routeProvider) {
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $resourceProvider.defaults.stripTrailingSlashes = false;
-
-};
-
-app.config(['localStorageServiceProvider', function(localStorageServiceProvider){
   localStorageServiceProvider.setPrefix('ls');
-}])
 
-app.run(['$http', '$cookies', function($http, $cookies) {
-  $http.defaults.headers.common['X-CSRFToken'] = $cookies['csrftoken'];
-}]);
-
-var onlyLoggedIn = function ($location, localStorageService) {
-    var user = localStorageService.get('user');
-    if (user) {
-      return true;
-    } else {
-      $location.url('/login');
-    }
-};
-
-// rutas
-app.config(config)
-
-function config($routeProvider) {
+  // rutas
   $routeProvider
     .when('/login', {
       templateUrl : 'login.html',
@@ -62,6 +41,20 @@ function config($routeProvider) {
 };
 
 
+app.run(['$http', '$cookies', function($http, $cookies) {
+  $http.defaults.headers.common['X-CSRFToken'] = $cookies['csrftoken'];
+}]);
+
+var onlyLoggedIn = function ($location, localStorageService) {
+    var user = localStorageService.get('user');
+    if (user) {
+      return true;
+    } else {
+      $location.url('/login');
+    }
+};
+
+
 // Factoriza los resource para obtener datos de la api de django
 app.factory('moduleResource', moduleResource);
 
@@ -74,78 +67,44 @@ function moduleResource($resource) {
 
 app.controller('projectsController', homeController)
 
-function homeController($scope, $http, $rootScope, localStorageService) {
+function homeController($http, localStorageService) {
+  var vm = this;
   var user = localStorageService.get('user');
-  $scope.user = user.data.username;
+
+  vm.user = user.data.username;
 };
 
 
 app.controller('loginController', loginController)
 
-function loginController($scope, $http, $rootScope, $location, toaster, localStorageService) {
+function loginController($scope, $http, localStorageService, loginService) {
+  var vm = this;
+  vm.usr = {};
 
-  $scope.usr = {};
   $scope.login = function() 
   {
+    var vm = this;
     var data = {
-      username : $scope.usr.username,
-      password : $scope.usr.password
+      username : vm.usr.username,
+      password : vm.usr.password
     };
-    $http.post('http://localhost:8000/auth/login/', data).then(function(result){
-      // obtengo token de auth
-      $http.defaults.headers.common.Authorization = 'Token ' + result.data.auth_token;
 
-      // obtengo datos del usuario y levanto bandera de login.
-      $http.get('http://localhost:8000/auth/me/').then(function(user){
-        localStorageService.set('user', user);
-        //$rootScope.loggedUser = true;
-        //$rootScope.username = user.data.username;
-        //$rootScope.idUser = user.data.id;
-
-        // redirigo la ruta
-        $location.path( "/" );
-      });
-    },function() {
-      $rootScope.loggedUser = null;
-      $rootScope.username = '';
-      $rootScope.idUser = 0;
-
-      // muestro error por login incorrecto
-      toaster.pop({
-        type: 'error',
-        title: 'Error',
-        body: 'Los datos ingresados son incorrectos.',
-        showMethod: 'fadeIn',
-        hideMethod: 'fadeOut',
-        positionClass: 'toast-top-full-width'
-      });
-    });
+    localStorageService.set('data_login', data);
+    loginService.login();
   };
 
   $scope.register = function() {
-    var data_register = {
-      username : $scope.usr.new_username,
-      password : $scope.usr.new_password,
+    var vm = this;
+    var data = {
+      username : vm.usr.new_username,
+      password : vm.usr.new_password,
     };
 
     // Registro usuario
     $http.post('http://localhost:8000/auth/register/', data_register).then(function(result){
-        // Una vez registrado , logueo usuario
-        $http.post('http://localhost:8000/auth/login/', data_register).then(function(result){
-
-        // obtengo token de auth
-        $http.defaults.headers.common.Authorization = 'Token ' + result.data.auth_token;
-
-        // obtengo datos del usuario y levanto bandera de login.
-        $http.get('http://localhost:8000/auth/me/').then(function(user){
-          $rootScope.loggedUser = true;
-          $rootScope.username = user.data.username;
-          $rootScope.idUser = user.data.id;
-        });
-
-        // redirigo la ruta
-        $location.path( "/" );
-      });
+      // Una vez registrado , logueo usuario
+      localStorageService.set('data_login', data)
+      loginService.login();
     });
   };
 };
