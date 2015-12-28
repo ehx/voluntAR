@@ -41,12 +41,12 @@ app.config(config)
 
 function config($routeProvider) {
   $routeProvider
-    .when('/', {
+    .when('/login', {
       templateUrl : 'login.html',
       controller  : 'loginController'
     })
 
-    .when('/projects', {
+    .when('/', {
       templateUrl : 'projects.html',
       controller  : 'projectsController',
       resolve: { loggedIn: onlyLoggedIn }
@@ -103,7 +103,7 @@ function loginController($scope, $http, $rootScope, $location, toaster, localSto
         //$rootScope.idUser = user.data.id;
 
         // redirigo la ruta
-        $location.path( "/projects" );
+        $location.path( "/" );
       });
     },function() {
       $rootScope.loggedUser = null;
@@ -144,7 +144,7 @@ function loginController($scope, $http, $rootScope, $location, toaster, localSto
         });
 
         // redirigo la ruta
-        $location.path( "/home" );
+        $location.path( "/" );
       });
     });
   };
