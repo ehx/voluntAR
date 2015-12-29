@@ -46,12 +46,12 @@ app.run(['$http', '$cookies', function($http, $cookies) {
 }]);
 
 var onlyLoggedIn = function ($location, localStorageService) {
-    var user = localStorageService.get('user');
-    if (user) {
-      return true;
-    } else {
-      $location.url('/login');
-    }
+  var user = localStorageService.get('user');
+  if (user) {
+    return true;
+  } else {
+    $location.url('/login');
+  }
 };
 
 

@@ -15,11 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from principal.viewsets import AccountViewSet
+from principal.viewsets import *
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r'accounts', AccountViewSet)
+router.register(r'Cuentas', AccountViewSet)
+router.register(r'Eventos', EventViewSet)
+router.register(r'Aportes', BackViewSet)
+router.register(r'Aportes de elementos', BackElementViewSet)
+router.register(r'Aportes de voluntarios', EventVoluntaryViewSet)
+router.register(r'Inscripciones de aportes', EventBackViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

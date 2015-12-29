@@ -11,7 +11,7 @@ class Account(models.Model):
     user.USERNAME_FIELD = 'email'
 
     def __str__(self):
-        return self.user.first_name  + ' ' + self.user.last_name
+        return self.user.username
 
 class Event(models.Model):
     owner = models.ForeignKey(Account, null=True, verbose_name='Propietario', related_name="accountEvent")
