@@ -15,7 +15,7 @@ function config($httpProvider, $resourceProvider, localStorageServiceProvider, $
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-  $resourceProvider.defaults.stripTrailingSlashes = false;
+  //$resourceProvider.defaults.stripTrailingSlashes = false;
   localStorageServiceProvider.setPrefix('ls');
 
   // rutas
