@@ -19,9 +19,9 @@ from principal.viewsets import *
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r'cuentas', AccountViewSet)
-router.register(r'eventos', EventViewSet)
-router.register(r'aportes', BackViewSet)
+router.register(r'cuenta', AccountViewSet)
+router.register(r'evento', EventViewSet)
+router.register(r'aporte', BackViewSet)
 router.register(r'aporte_elemento', BackElementViewSet)
 router.register(r'aporte_voluntario', EventVoluntaryViewSet)
 router.register(r'inscripcion_aporte', EventBackViewSet)

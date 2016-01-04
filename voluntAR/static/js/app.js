@@ -47,7 +47,7 @@ app.run(['$http', '$cookies', function($http, $cookies) {
 
 var onlyLoggedIn = function ($location, localStorageService) {
   var user = localStorageService.get('user');
-  if (user) {
+  if(user) {
     return true;
   } else {
     $location.url('/login');
@@ -77,7 +77,7 @@ function homeController($http, localStorageService) {
 
 app.controller('loginController', loginController)
 
-function loginController($scope, $http, localStorageService, loginService) {
+function loginController($scope, $http, localStorageService, loginService, toaster) {
   var vm = this;
   vm.usr = {};
 
@@ -101,11 +101,21 @@ function loginController($scope, $http, localStorageService, loginService) {
     };
 
     // Registro usuario
-    $http.post('http://localhost:8000/auth/register/', data_register).then(function(result){
+    $http.post('http://localhost:8000/auth/register/', data).then(function(result){
       // Una vez registrado , logueo usuario
       localStorageService.set('data_login', data)
       loginService.login();
-    });
+    }, function(response){
+      // Mestra mensaje en caso de no poder registrar usuario.
+      toaster.pop({
+        type: 'error',
+        title: 'Error',
+        body: 'El usuario ya esta registrado.',
+        showMethod: 'fadeIn',
+        hideMethod: 'fadeOut',
+        positionClass: 'toast-top-full-width'
+      });
+   });
   };
 };
 

@@ -18,10 +18,9 @@ function loginService($http, $location, localStorageService, toaster) {
       // obtengo datos del usuario y los guardo en un storage local
       $http.get('http://localhost:8000/auth/me/').then(function(user){
         localStorageService.set('user', user);
+        // redirigo la ruta
+        return $location.path( "/" );
       });
-
-      // redirigo la ruta
-      return $location.path( "/" );
     }, function() {
     	// login erroneo , muestra error
       return toaster.pop({
