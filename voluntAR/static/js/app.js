@@ -1,9 +1,9 @@
 'use strict';
 
 var app = angular.module('app', [
-  'ngResource', 
-  'ngRoute', 
-  'ngCookies', 
+  'ngResource',
+  'ngRoute',
+  'ngCookies',
   'ngAnimate',
   'LocalStorageModule',
   'toaster'
@@ -29,6 +29,11 @@ function config($httpProvider, $resourceProvider, localStorageServiceProvider, $
       templateUrl : 'projects.html',
       controller  : 'projectsController',
       resolve: { loggedIn: onlyLoggedIn }
+    })
+
+    .when('/event', {
+      templateUrl : 'event.html',
+      controller  : 'projectsController',
     })
 
     .when('/plain', {
@@ -81,7 +86,7 @@ function loginController($scope, $http, localStorageService, loginService, toast
   var vm = this;
   vm.usr = {};
 
-  $scope.login = function() 
+  $scope.login = function()
   {
     var vm = this;
     var data = {
