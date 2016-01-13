@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 class Account(models.Model):
     user = models.OneToOneField(User, verbose_name="Usuario", unique=True)
+    logo = models.CharField(max_length=500, verbose_name="logo")
     is_ONG = models.BooleanField(default=False, verbose_name='ONG')
 
     created_at = models.DateTimeField(auto_now_add=True)

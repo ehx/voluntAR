@@ -31,9 +31,9 @@ function config($httpProvider, $resourceProvider, localStorageServiceProvider, $
       resolve: { loggedIn: onlyLoggedIn }
     })
 
-    .when('/event', {
+    .when('/evento/:id', {
       templateUrl : 'event.html',
-      controller  : 'projectsController',
+      controller  : 'eventController',
     })
 
     .when('/plain', {
@@ -50,6 +50,18 @@ app.run(['$http', '$cookies', function($http, $cookies) {
   $http.defaults.headers.common['X-CSRFToken'] = $cookies['csrftoken'];
 }]);
 
+app.directive('tabsJquery', tabsJquery);
+
+function tabsJquery() {
+  return {
+    restrict: 'A',
+    link: function(scope, elm, attrs) {
+      var jqueryElm = $(elm[0]);
+      $(jqueryElm).tabs()
+    }
+  };
+}
+
 var onlyLoggedIn = function ($location, localStorageService) {
   var user = localStorageService.get('user');
   if(user) {
@@ -61,6 +73,31 @@ var onlyLoggedIn = function ($location, localStorageService) {
 
 
 // Factoriza los resource para obtener datos de la api de django
+app.factory('eventResource', function ($resource) {
+  return $resource('/evento/:id', {id:'@id'},
+    {
+      'get':    {method:'GET', isArray:false},
+      'save':   {method:'POST'},
+      'update': {method:'PATCH'},
+      'query':  {method:'GET', isArray:true},
+      'remove': {method:'DELETE'},
+      'delete': {method:'DELETE'}
+    });
+});
+
+app.factory('accountResource', function ($resource) {
+  return $resource('/cuenta/:id', {id:'@id'},
+    {
+      'get':    {method:'GET', isArray:false},
+      'save':   {method:'POST'},
+      'update': {method:'PATCH'},
+      'query':  {method:'GET', isArray:true},
+      'remove': {method:'DELETE'},
+      'delete': {method:'DELETE'}
+    });
+});
+
+
 app.factory('moduleResource', moduleResource);
 
 function moduleResource($resource) {
@@ -137,4 +174,22 @@ function UnicornLauncherProvider() {
   this.$get = ["apiToken", function unicornLauncherFactory(apiToken) {
     return new UnicornLauncher(apiToken, useTinfoilShielding);
   }];
+};
+
+
+app.controller('eventController', eventFunction);
+
+function eventFunction($scope, eventResource, accountResource, $routeParams) {
+  function getEvent(){
+    eventResource.get({ id : $routeParams.id }, function(data){
+      $scope.event=data;
+      $scope.account = accountResource.get({ id : data.owner }); 
+    });
+  };
+  getEvent();
+
+  // obtengo cuenta de la tarea
+
+
+
 };
