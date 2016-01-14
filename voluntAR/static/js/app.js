@@ -6,7 +6,7 @@ var app = angular.module('app', [
   'ngCookies',
   'ngAnimate',
   'LocalStorageModule',
-  'toaster'
+  'toaster',
 ]);
 
 app.config(config);
@@ -44,7 +44,6 @@ function config($httpProvider, $resourceProvider, localStorageServiceProvider, $
       redirectTo: '/'
     });
 };
-
 
 app.run(['$http', '$cookies', function($http, $cookies) {
   $http.defaults.headers.common['X-CSRFToken'] = $cookies['csrftoken'];
@@ -97,6 +96,29 @@ app.factory('accountResource', function ($resource) {
     });
 });
 
+app.factory('eventBackResource', function ($resource) {
+  return $resource('/aporte_elemento/:id', {id:'@id'},
+    {
+      'get':    {method:'GET', isArray:false},
+      'save':   {method:'POST'},
+      'update': {method:'PATCH'},
+      'query':  {method:'GET', isArray:true},
+      'remove': {method:'DELETE'},
+      'delete': {method:'DELETE'}
+    });
+});
+
+app.factory('EventVoluntary', function ($resource) {
+  return $resource('/aporte_voluntario/:id', {id:'@id'},
+    {
+      'get':    {method:'GET', isArray:false},
+      'save':   {method:'POST'},
+      'update': {method:'PATCH'},
+      'query':  {method:'GET', isArray:true},
+      'remove': {method:'DELETE'},
+      'delete': {method:'DELETE'}
+    });
+});
 
 app.factory('moduleResource', moduleResource);
 
@@ -183,13 +205,8 @@ function eventFunction($scope, eventResource, accountResource, $routeParams) {
   function getEvent(){
     eventResource.get({ id : $routeParams.id }, function(data){
       $scope.event=data;
-      $scope.account = accountResource.get({ id : data.owner }); 
     });
   };
   getEvent();
-
-  // obtengo cuenta de la tarea
-
-
 
 };

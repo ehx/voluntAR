@@ -19,6 +19,11 @@ class AccountSerializer(serializers.ModelSerializer):
     model = Account
 
 class EventSerializer(serializers.ModelSerializer):
+  owner = AccountSerializer()
+  class Meta:
+      model = Event
+
+class EventSerializerWriter(serializers.ModelSerializer):
   class Meta:
       model = Event
 

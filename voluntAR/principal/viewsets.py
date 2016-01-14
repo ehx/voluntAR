@@ -19,8 +19,15 @@ class AccountViewSet(viewsets.ModelViewSet):
 
 class EventViewSet(viewsets.ModelViewSet):
   queryset = Event.objects.all()
-  serializer_class = EventSerializer
   filter_backends = (filters.DjangoFilterBackend,)
+
+  def get_serializer_class(self):
+    # get one task
+    if self.action == 'retrieve':
+        return EventSerializer
+    if self.action == 'list':
+        return EventSerializer
+    return EventSerializerWriter
 
 class BackViewSet(viewsets.ModelViewSet):
   queryset = Back.objects.all()

@@ -15,12 +15,12 @@ class Account(models.Model):
         return self.user.username
 
 class Event(models.Model):
-    owner = models.ForeignKey(Account, null=True, verbose_name='Propietario', related_name="accountEvent")
-    finish_date = models.DateField(null=True, verbose_name='Fecha de Fin')
-    picture = models.CharField(max_length=500, verbose_name="Imagen")
+    owner = models.ForeignKey(Account, verbose_name='Propietario', related_name="accountEvent")
+    finish_date = models.DateField(verbose_name='Fecha de Fin')
+    picture = models.CharField(null=True, max_length=500, verbose_name="Imagen")
     title = models.CharField(max_length=50, verbose_name="Titulo")
-    short_description = models.CharField(max_length=150, verbose_name="Descripcion Corta", blank=True)
-    description = models.CharField(max_length=500, verbose_name="Descripcion", blank=True)
+    short_description = models.CharField(max_length=150, verbose_name="Descripcion Corta")
+    description = models.CharField(max_length=500, verbose_name="Descripcion")
     #location = models.CharField()
 
     def __str__(self):
