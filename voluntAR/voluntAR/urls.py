@@ -23,8 +23,9 @@ router.register(r'cuenta', AccountViewSet)
 router.register(r'evento', EventViewSet)
 router.register(r'aporte', BackViewSet)
 router.register(r'aporte_elemento', BackElementViewSet)
-router.register(r'aporte_voluntario', EventVoluntaryViewSet)
-router.register(r'inscripcion_aporte', EventBackViewSet)
+#router.register(r'inscripcion_aporte', EventBackViewSet)
+router.register(r'evento_aporte', EventBackViewSet)
+router.register(r'evento_voluntario', EventVoluntaryViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
