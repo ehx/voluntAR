@@ -130,7 +130,7 @@ function moduleResource($resource) {
 
 // Factoriza los resource para obtener datos de la api de django
 app.factory('eventResource', function ($resource) {
-  return $resource('/eventos/:id', {id:'@id'},
+  return $resource('/evento/:id', {id:'@id'},
     {
       'get':    {method:'GET', isArray:false},
       'save':   {method:'POST'},
@@ -148,8 +148,8 @@ function projectsController($scope, $http, localStorageService, eventResource) {
   var user = localStorageService.get('user');
 
   vm.user = user.data.username;
-  
-  
+
+
   eventResource.query({}, function(data){
 		$scope.eventos = data;
 	});
