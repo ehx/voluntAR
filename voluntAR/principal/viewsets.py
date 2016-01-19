@@ -48,3 +48,4 @@ class EventBackViewSet(viewsets.ModelViewSet):
   queryset = EventBack.objects.all()
   serializer_class = EventBackSerializer
   filter_backends = (filters.DjangoFilterBackend,)
+  filter_fields = ('id', 'event')

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 class Account(models.Model):
     user = models.OneToOneField(User, verbose_name="Usuario", unique=True)
-    logo = models.CharField(max_length=500, verbose_name="logo")
+    avatar = models.CharField(max_length=500, verbose_name="logo")
     is_ONG = models.BooleanField(default=False, verbose_name='ONG')
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -48,11 +48,14 @@ class EventVoluntary(models.Model):
     comment = models.CharField(max_length=5000, verbose_name="Comentario")
     done = models.BooleanField(default=0, verbose_name="Realizado")
 
+    class Meta:
+        unique_together = ('event', 'voluntary')
+
     def __str__(self):
         return self.voluntary.user.first_name + ' ' + self.event.title
 
 class EventBack(models.Model):
-    event = models.ForeignKey(Event, verbose_name="Evento")
+    event = models.OneToOneField(Event, verbose_name="Evento")
     back_action = models.ManyToManyField(Back, related_name="Acciones_Evento")
     back_element = models.ManyToManyField(BackElement, related_name="Elementos_Evento")
 

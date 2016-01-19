@@ -108,7 +108,7 @@ app.factory('eventBackResource', function ($resource) {
     });
 });
 
-app.factory('eventVoluntary', function ($resource) {
+app.factory('eventVoluntaryResource', function ($resource) {
   return $resource('/evento_voluntario/:id', {id:'@id'},
     {
       'get':    {method:'GET', isArray:false},
@@ -201,19 +201,26 @@ function UnicornLauncherProvider() {
 
 app.controller('eventController', eventFunction);
 
-function eventFunction($scope, eventResource, accountResource, eventBackResource, $routeParams) {
+function eventFunction($scope, eventResource, accountResource, eventBackResource,
+  eventVoluntaryResource, $routeParams) {
   function getEvent(){
     eventResource.get({ id : $routeParams.id }, function(data){
       $scope.event=data;
       getEventBack();
+      getEventVoluntary();
     });
   };
   getEvent();
 
   function getEventBack(){
-    // obtiene todos los clientes
-    eventBackResource.query({ id : $routeParams.id}, function(data){
-      $scope.eventBacks = data;
+    eventBackResource.query({ event : $routeParams.id}, function(data){
+      $scope.eventBacks = data[0];
+    });
+  };
+
+  function getEventVoluntary(){
+    eventVoluntaryResource.query({ event : $routeParams.id}, function(data){
+      $scope.eventVoluntary = data;
     });
   };
 };

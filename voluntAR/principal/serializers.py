@@ -36,9 +36,12 @@ class BackElementSerializer(serializers.ModelSerializer):
     model = BackElement
 
 class EventVoluntarySerializer(serializers.ModelSerializer):
+  voluntary = AccountSerializer()
   class Meta:
     model = EventVoluntary
 
 class EventBackSerializer(serializers.ModelSerializer):
+  back_action = BackSerializer(many=True)
+  back_element = BackElementSerializer(many=True)
   class Meta:
     model = EventBack
