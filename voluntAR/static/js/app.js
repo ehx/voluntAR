@@ -26,7 +26,7 @@ function config($httpProvider, $resourceProvider, localStorageServiceProvider, $
     })
 
     .when('/', {
-      templateUrl : 'projects.html',
+      templateUrl : 'proyectos.html',
       controller  : 'projectsController',
       resolve: { loggedIn: onlyLoggedIn }
     })
@@ -128,14 +128,31 @@ function moduleResource($resource) {
   });
 };
 
+// Factoriza los resource para obtener datos de la api de django
+app.factory('eventResource', function ($resource) {
+  return $resource('/eventos/:id', {id:'@id'},
+    {
+      'get':    {method:'GET', isArray:false},
+      'save':   {method:'POST'},
+      'update': {method:'PATCH'},
+      'query':  {method:'GET', isArray:true},
+      'remove': {method:'DELETE'},
+      'delete': {method:'DELETE'}
+    });
+});
 
-app.controller('projectsController', homeController)
+app.controller('projectsController', projectsController)
 
-function homeController($http, localStorageService) {
+function projectsController($scope, $http, localStorageService, eventResource) {
   var vm = this;
   var user = localStorageService.get('user');
 
   vm.user = user.data.username;
+  
+  
+  eventResource.query({}, function(data){
+		$scope.eventos = data;
+	});
 };
 
 

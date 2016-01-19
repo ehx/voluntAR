@@ -1,0 +1,28 @@
+<br>
+<br>
+<br>
+<br>
+<br>				
+<div class="imghoverclass">
+</div>
+<div>
+	<div class="filtro">
+		<span class="buscarLibros">Buscar:</span> 
+		<input ng-model="proyectobusc" class="filtroproyectos">
+	</div> 
+	<br>
+     <table class="tablaproyectos" border="1">
+				<tr ng-repeat="evento in eventos | filter:proyectobusc">
+					<td>
+					<a href="#/" title="Image Slider Post">
+						<img src="{{evento.picture}}" alt="Image Slider Post" class="iconhover" style="display:block;">
+					</a>
+					</td>
+				</tr>
+        <tr >
+            <td>{{evento.owner}}</td>
+            <td>{{evento.Lugar}}</td>
+						<td>{{evento.finish_date}}</td>
+        </tr>
+     </table>
+</div>
