@@ -2,27 +2,36 @@
 <br>
 <br>
 <br>
-<br>				
+<br>
 <div class="imghoverclass">
 </div>
 <div>
 	<div class="filtro">
-		<span class="buscarLibros">Buscar:</span> 
+		<span class="buscarLibros">Buscar:</span>
 		<input ng-model="proyectobusc" class="filtroproyectos">
-	</div> 
+	</div>
 	<br>
      <table class="tablaproyectos" border="1">
 				<tr ng-repeat="evento in eventos | filter:proyectobusc">
-					<td>
-					<a href="#/" title="Image Slider Post">
-						<img src="{{evento.picture}}" alt="Image Slider Post" class="iconhover" style="display:block;">
-					</a>
-					</td>
+					<div class="col-md-6 col-sm-6 clearclass0">
+	                  <article id="post-155" class="post-155 post type-post status-publish format-standard has-post-thumbnail hentry category-photos tag-adventure tag-photos tag-surfing">
+	                    <div class="rowtight">
+	                    <div class="tcol-md-5 tcol-sm-12 tcol-ss-12">
+	                        <div class="imghoverclass">
+								<a href="#/evento/1" title="Image Slider Post">
+									<img src="{{evento.picture}}" alt="Image Slider Post" class="iconhover" style="display:block;">
+								</a>
+							</div>
+						</div>
+						</div>
+					</article>
+				  	</div>
+
 				</tr>
         <tr >
             <td>{{evento.owner}}</td>
             <td>{{evento.Lugar}}</td>
-						<td>{{evento.finish_date}}</td>
+			<td>{{evento.finish_date}}</td>
         </tr>
      </table>
 </div>

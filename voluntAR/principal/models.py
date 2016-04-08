@@ -14,6 +14,7 @@ class Account(models.Model):
     def __str__(self):
         return self.user.username
 
+
 class Event(models.Model):
     owner = models.ForeignKey(Account, verbose_name='Propietario', related_name="accountEvent")
     finish_date = models.DateField(verbose_name='Fecha de Fin')

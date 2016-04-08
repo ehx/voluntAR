@@ -26,7 +26,7 @@ function config($httpProvider, $resourceProvider, localStorageServiceProvider, $
     })
 
     .when('/', {
-      templateUrl : 'proyectos.html',
+      templateUrl : 'projects.html',
       controller  : 'projectsController',
       resolve: { loggedIn: onlyLoggedIn }
     })
